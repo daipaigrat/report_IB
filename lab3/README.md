@@ -1,11 +1,3 @@
----
-title: "Работа с пакетом dplyr"
-author: "lieless@yandex.ru"
-format: 
-  md:
-    output-file: README.md
----
-
 #Анализ встроенного пакета dplyr
 
 ## Цель работы
