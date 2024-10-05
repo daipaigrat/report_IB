@@ -1,5 +1,5 @@
 ---
-title: "Работа с пакетом dplyr"
+title: "Продолжение работы с пакетом dplyr"
 author: "lieless@yandex.ru"
 format: 
   md:
@@ -18,91 +18,108 @@ format:
 2.  Rstudio Desktop
 3.  Интерпретатор языка R 4.4.1
 4.  Программный пакет dplyr
+5.  Программный пакет nyclights13
 
 ## План
 
-1.  Установить программный пакет dplyr
+1.  Установить программный пакет nyclights13
 2.  Проанализировать набор данных
 3.  Ответить на вопросы
 
 ## Шаги
 
-1.  Для начала прохождения курса необходимо установить программный пакет dplyr.
+1.  Для начала прохождения курса необходимо установить пакет nyclights13.
 
 ```{r}
-install.packages("dplyr")
+install.packages("nycflights13")
 ```
-2. Загружаем библиотеку.
+2. Загружаем библиотеки.
 
 ```{r}
+library(nycflights13)
 library(dplyr)
 ```
-3. Выполняем задания.
 
-  а) Сколько строк в датафрейме?
+3. Переходим непосредственно к анализу набора данных nycflights13 и выполнению заданий:
+  
+  a) Сколько встроенных в пакет nycflights13 датафреймов?
 ```{r}
-starwars %>% nrow()
+length(data(package = "nycflights13")$results[, "Item"])
 ```
   
-  b) Сколько столбцов в датафрейме?
+  b) Сколько строк в каждом датафрейме?
 ```{r}
-starwars %>% ncol()
+list(
+  flights = nrow(flights),
+  airlines = nrow(airlines),
+  airports = nrow(airports),
+  planes = nrow(planes),
+  weather = nrow(weather)
+)
 ```
   
-  c) Как просмотреть примерный вид датафрейма?
+  c) Сколько столбцов в каждом датафрейме?
 ```{r}
-starwars %>% glimpse()
+list(
+  flights = ncol(flights),
+  airlines = ncol(airlines),
+  airports = ncol(airports),
+  planes = ncol(planes),
+  weather = ncol(weather)
+)
 ```
   
-  d) Сколько уникальных рас персонажей (species) представлено в данных?
+  d) Как просмотреть примерный вид датафрейма?
 ```{r}
-starwars %>% filter(!is.na(species)) %>% reframe(unique(species))
+flights %>% glimpse()
 ```
   
-  e) Найти самого высокого персонажа.
+  e) Сколько компаний-перевозчиков (carrier) учитывают эти наборы данных
+  (представлено в наборах данных)?
 ```{r}
-starwars %>% filter(!is.na(height)) %>% arrange(desc(height)) %>% slice(1) %>% select(name,height)
+flights %>% filter(!is.na(carrier)) %>% distinct(carrier) %>% nrow()
 ```
   
-  f) Найти всех персонажей ниже 170
+  f) Сколько рейсов принял аэропорт John F Kennedy Intl в мае?
 ```{r}
-starwars %>% filter(!is.na(height) & height < 170) %>% select(name,height)
-
+flights %>% filter(origin == "JFK", month == 5) %>% nrow()
 ```
   
-  g) Подсчитать ИМТ (индекс массы тела) для всех персонажей. ИМТ подсчитать по
-  формуле I = m / h^2 где m - масса, h - рост
+  g) Какой самый северный аэропорт?
 ```{r}
-starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(bmi = mass / (height/100)^2) %>% select(name,bmi)
-
+airports %>% arrange(desc(lat)) %>% slice(1)
 ```
   
-  h) Найти 10 самых “вытянутых” персонажей. “Вытянутость” оценить по отношению
-массы (mass) к росту (height) персонажей.
+  h) Какой аэропорт самый высокогорный (находится выше всех над уровнем моря)?
 ```{r}
-starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(stretch = mass / height) %>% arrange(desc(stretch)) %>% slice(1:10) %>% select(name,stretch)
-```
-
-  i) Найти средний возраст персонажей каждой расы вселенной Звездных войн.
-```{r}
-starwars %>% filter(!is.na(species) & !is.na(birth_year)) %>% group_by(species) %>% summarise(average_age = mean(birth_year, na.rm = TRUE))
+airports %>% arrange(desc(alt)) %>% slice(1)
 ```
   
-  j) Найти самый распространенный цвет глаз персонажей вселенной Звездных
-войн.
+  i) Какие бортовые номера у самых старых самолетов?
 ```{r}
-starwars %>% filter(!is.na(eye_color)) %>% group_by(eye_color) %>% summarise(count = n()) %>% arrange(desc(count)) %>% slice(1)
+planes %>% arrange(desc(year)) %>% select(tailnum)
 ```
-
-  k) Подсчитать среднюю длину имени в каждой расе вселенной Звездных войн.
+  
+  j) Какая средняя температура воздуха была в сентябре в аэропорту John F
+  Kennedy Intl (в градусах Цельсия).
 ```{r}
-starwars %>% filter(!is.na(species) & !is.na(name)) %>% mutate(name_length = nchar(name)) %>% group_by(species) %>% summarise(len = mean(name_length, na.rm = TRUE))
+weather %>% filter(origin == "JFK", month == 9) %>% summarise(avg_temp = mean((temp - 32) * 5 / 9, na.rm = TRUE))
 ```
-
+  
+  k) Самолеты какой авиакомпании совершили больше всего вылетов в июне?
+```{r}
+flights %>% filter(month == 6) %>% count(carrier, sort = TRUE)
+```
+  
+  l) Самолеты какой авиакомпании задерживались чаще других в 2013 году?
+```{r}
+flights %>% filter(dep_delay > 0 & year == 2013) %>% count(carrier, sort = TRUE)
+```
+  
 ## Оценка результата
 
-В результате работы была скачана библиотека dplyr и были выполнены задания с использованием набора данных starwars.
+В результате работы была скачан пакет nycflights13 и были выполнены задания с использованием наборов данных.
 
 ## Вывод
 
-Были изучены функции библиотеки dplyr. Были выполнены поставленные практикой задачи.
+Были проанализованы наборы данных пакета nyclights13. Были выполнены поставленные практикой задачи.

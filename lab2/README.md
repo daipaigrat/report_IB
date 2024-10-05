@@ -1,327 +1,100 @@
-# Введение в R
+# Анализ встроенного пакета dplyr
 
 ## Цель работы
 
-Развить навыки работы с языком программирования R и закрепить знания базовых типов данных и операций с ними
+Развить практические навыки использования функций обработки данных пакета dplyr – функции select(), filter(), mutate(), arrange(), group_by()
 
 ## Исходные данные
 
 1.  Программное обеспечение MacOS 14.4.1 Sonoma
 2.  Rstudio Desktop
 3.  Интерпретатор языка R 4.4.1
-4.  Программный пакет swirl
+4.  Программный пакет dplyr
 
 ## План
 
-1.  Установить программный пакет swirl
-2.  Выполнить подкурсы
+1.  Установить программный пакет dplyr
+2.  Проанализировать набор данных
+3.  Ответить на вопросы
 
 ## Шаги
 
-1.  Для начала прохождения курса необходимо установить программный пакет swirl.
+1.  Для начала прохождения курса необходимо установить программный пакет dplyr.
 
 ```{r}
-#install.packages("swirl")
+install.packages("dplyr")
 ```
-
-2.  Запускаем задания с помощью команды.
-
-```{r}
-swirl::swirl()
-```
-```{r}
-12
-```
-```{r}
-5 + 7
-```
-```{r}
-x <- 5 + 7
-```
-```{r}
-x
-```
-```{r}
-y <- x - 3
-```
+2. Загружаем библиотеку.
 
 ```{r}
-y
+library(dplyr)
+```
+3. Выполняем задания.
+
+  а) Сколько строк в датафрейме?
+```{r}
+starwars %>% nrow()
+```
+  
+  b) Сколько столбцов в датафрейме?
+```{r}
+starwars %>% ncol()
+```
+  
+  c) Как просмотреть примерный вид датафрейма?
+```{r}
+starwars %>% glimpse()
+```
+  
+  d) Сколько уникальных рас персонажей (species) представлено в данных?
+```{r}
+starwars %>% filter(!is.na(species)) %>% reframe(unique(species))
+```
+  
+  e) Найти самого высокого персонажа.
+```{r}
+starwars %>% filter(!is.na(height)) %>% arrange(desc(height)) %>% slice(1) %>% select(name,height)
+```
+  
+  f) Найти всех персонажей ниже 170
+```{r}
+starwars %>% filter(!is.na(height) & height < 170) %>% select(name,height)
+
+```
+  
+  g) Подсчитать ИМТ (индекс массы тела) для всех персонажей. ИМТ подсчитать по
+  формуле I = m / h^2 где m - масса, h - рост
+```{r}
+starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(bmi = mass / (height/100)^2) %>% select(name,bmi)
+
+```
+  
+  h) Найти 10 самых “вытянутых” персонажей. “Вытянутость” оценить по отношению
+массы (mass) к росту (height) персонажей.
+```{r}
+starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(stretch = mass / height) %>% arrange(desc(stretch)) %>% slice(1:10) %>% select(name,stretch)
 ```
 
+  i) Найти средний возраст персонажей каждой расы вселенной Звездных войн.
 ```{r}
-z <- c(1.1,9,3.4)
+starwars %>% filter(!is.na(species) & !is.na(birth_year)) %>% group_by(species) %>% summarise(average_age = mean(birth_year, na.rm = TRUE))
 ```
+  
+  j) Найти самый распространенный цвет глаз персонажей вселенной Звездных
+войн.
 ```{r}
-z <- c(1.1, 9, 3.14)
-```
-```{r}
-?c
-```
-```{r}
-z
-```
-```{r}
-z2 <- c(z,555)
-```
-```{r}
-c (z,555,z)
-```
-```{r}
-z * 2 + 100
-```
-```{r}
-my_sqrt <- sqrt(z - 1)
-```
-```{r}
-my_sqrt
-```
-```{r}
- my_div <- z / my_sqrt
-```
-```{r}
-my_div
-```
-```{r}
-c(1, 2, 3, 4) + c(0, 10)
-```
-```{r}
-c(1, 2, 3, 4) + c(0, 10, 100)
-```
-```{r}
-z * 2 + 1000
-```
-```{r}
-my_div
-```
-```{r}
-getwd()
-```
-```{r}
-ls()
-```
-```{r}
-x <- 9
-```
-```{r}
-ls()
-```
-```{r}
-dir()
+starwars %>% filter(!is.na(eye_color)) %>% group_by(eye_color) %>% summarise(count = n()) %>% arrange(desc(count)) %>% slice(1)
 ```
 
+  k) Подсчитать среднюю длину имени в каждой расе вселенной Звездных войн.
 ```{r}
-?list.files
+starwars %>% filter(!is.na(species) & !is.na(name)) %>% mutate(name_length = nchar(name)) %>% group_by(species) %>% summarise(len = mean(name_length, na.rm = TRUE))
 ```
-```{r}
-args()
-```
-```{r}
-args(list.files())
-```
-```{r}
-args(list.files)
-```
-```{r}
-old.dir <- getwd()
-```
-```{r}
-dir.create("testdir")
-```
-```{r}
-setwd("testdir")
-```
-```{r}
-file.create("mytest.R")
-```
-```{r}
-ls()
-```
-```{r}
-list.files()
-```
-```{r}
-file.exists("mytest.R")
-```
-```{r}
-file.info("mytest.R")
-```
-
-```{r}
-file.rename("mytest.R", "mytest2.R")
-```
-
-```{r}
-file.copy("mytest2.R", "mytest3.R")
-```
-
-```{r}
-file.path("mytest3.R")
-```
-
-```{r}
-file.path("folder1", "folder2")
-```
-```{r}
-?dir.create
-```
-
-```{r}
-dir.create(file.path('testdir2', 'testdir3'), recursive = TRUE)
-```
-```{r}
-unlink('testdir2', recursive = TRUE)
-```
-
-```{r}
-setwd(old.dir)
-```
-
-```{r}
-1:20
-```
-```{r}
-pi:10
-```
-
-```{r}
-15:1
-```
-
-```{r}
-?':'
-```
-
-```{r}
-seq(1,20)
-```
-```{r}
-seq(0, 10, by=0.5)
-```
-```{r}
-my_seq <- seq(5, 10, length=30)
-```
-
-
-```{r}
-length(my_seq)
-```
-
-```{r}
-1:length(my_seq)
-```
-```{r}
-seq(along.with = my_seq)
-```
-
-```{r}
-seq_along(my_seq)
-```
-```{r}
-rep(0, times=40)
-```
-
-```{r}
-rep(c(0, 1, 2), times = 10)
-```
-
-```{r}
-rep(c(0, 1, 2), each = 10)
-```
-```{r}
-num_vect <- c(0.5, 55, -10, 6)
-```
-```{r}
-tf <- (num_vect < 1)
-```
-
-```{r}
-tf <- num_vect < 1
-```
-
-```{r}
-tf
-```
-```{r}
-num_vect >= 6
-```
-```{r}
-my_char <- c("My", "name", "is")
-```
-```{r}
-my_char
-```
-```{r}
-paste(my_char, collapse = " ")
-```
-
-```{r}
-my_name <- c(my_char, "Johnny")
-```
-```{r}
-my_name
-```
-```{r}
-paste(my_name, collapse = " ")
-```
-```{r}
-paste("Hello", "world!", sep = " ")
-```
-
-```{r}
-paste(1:3, c("X", "Y", "Z"), sep = "")
-```
-```{r}
-paste(LETTERS, 1:4, sep = "-")
-```
-
-```{r}
-x <- c(44, NA, 5, NA)
-```
-```{r}
-x * 3
-```
-
-```{r}
-y <- rnorm(1000)
-```
-```{r}
- z <- rep(NA, 1000)
-```
-```{r}
-my_data <- sample(c(y, z), 100)
-```
-
-```{r}
-my_na <- is.na(my_data)
-```
-```{r}
-my_na
-```
-```{r}
- my_data == NA
-```
-```{r}
-sum(my_na)
-```
-```{r}
-my_data
-```
-
-```{r}
-0 / 0
-```
-
-```{r}
-Inf - Inf
-```
-
-
 
 ## Оценка результата
 
-В результате работы была скачана библиотека swirl и были пройдены 5 модулей курса "R Programming: The basics of programming in R"
+В результате работы была скачана библиотека dplyr и были выполнены задания с использованием набора данных starwars.
 
 ## Вывод
 
-Были изучены новые команды и функции языка R. Протренированы взаимодействия с переменными, векторами, файлами, циклами и NA.
+Были изучены функции библиотеки dplyr. Были выполнены поставленные практикой задачи.
