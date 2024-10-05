@@ -1,11 +1,3 @@
----
-title: "Технология Yandex Query"
-author: "lieless@yandex.ru"
-format: 
-  md:
-    output-file: README.md
----
-
 # Использование технологии Yandex Query для анализа данных сетевой активности
 
 ## Цель работы
