@@ -38,16 +38,16 @@ glimpse(df)
 
 2.  Приступаем к выполнению заданий
 
-    a.  Найдите утечку данных из вашей сети
+  a.  Найдите утечку данных из вашей сети
     
 ```{r}
 task1 <- df %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% group_by(src) %>% summarise("sum" = sum(bytes)) %>%  filter(sum>6000000000) %>% select(src,sum) 
 task1 %>% collect()
 ```
     
-    b.  Найдите утечку данных 2
+  b.  Найдите утечку данных 2
     
-    Для начала нужно определить рабочее время. Для этого можно использовать нагрузку на трафик, и выцепить час с сортировкой по количеству трафика.
+  Для начала нужно определить рабочее время. Для этого можно использовать нагрузку на трафик, и выцепить час с сортировкой по количеству трафика.
     
 ```{r}
 task21 <- df %>% select(timestamp, src, dst, bytes) %>% mutate(trafic = (str_detect(src, "^((12|13|14)\\.)") & !str_detect(dst, "^((12|13|14)\\.)")),time = hour(as_datetime(timestamp/1000))) %>% filter(trafic == TRUE, time >= 0 & time <= 24) %>% group_by(time) %>%
@@ -55,7 +55,7 @@ summarise(trafictime = n()) %>% arrange(desc(trafictime))
 task21 %>% collect()
 ```
     
-    По данным выясняем, что рабочим временем является 16-23. 
+  По данным выясняем, что рабочим временем является 16-23. 
     
 ```{r}
 task22 <- df %>% mutate(time = hour(as_datetime(timestamp/1000))) %>% 
@@ -63,7 +63,7 @@ filter(!str_detect(src, "^13.37.84.125")) %>%  filter(str_detect(src, "^12.") | 
 task22 %>% collect()
 ```
     
-    c.  Найдите утечку данных 3
+  c.  Найдите утечку данных 3
     
 ```{r}
 task31 <- df %>% filter(!str_detect(src, "^13.37.84.125")) %>% filter(!str_detect(src, "^12.55.77.96")) %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% select(src, bytes, port) 
