@@ -69,7 +69,7 @@ glimpse(dataset2)
 ```{r}
 unsafe_access_points <- dataset1 %>% filter(grepl("OPN", Privacy))
 
-unsafe_access_points %>% select(BSSID, ESSID, Privacy)
+unsafe_access_points %>% select(BSSID, ESSID, Privacy) %>% knitr::kable()
 ```
   
   b. Определить производителя для каждого обнаруженного устройства
@@ -87,7 +87,7 @@ unsafe_access_points %>% select(BSSID, ESSID, Privacy)
 ```{r}
 wpa3_devices <- dataset1 %>% filter(grepl("WPA3", Privacy))
 
-wpa3_devices %>% select(BSSID, ESSID, Privacy)
+wpa3_devices %>% select(BSSID, ESSID, Privacy) %>% knitr::kable()
 ```
   
   d. Отсортировать точки доступа по интервалу времени, в течение которого они находились на связи, по убыванию.
@@ -97,7 +97,7 @@ wireNetData <- dataset1 %>% mutate(Time = difftime(Last.time.seen, First.time.se
 
 
 # Просмотр отсортированных данных
-wireNetData %>% select(BSSID, Time)
+wireNetData %>% select(BSSID, Time) %>% knitr::kable()
 ```
 
   e.Обнаружить топ-10 самых быстрых точек доступа.
@@ -105,7 +105,7 @@ wireNetData %>% select(BSSID, Time)
 ```{r}
 top_10_fastest <- dataset1 %>% arrange(desc(Speed)) %>% slice(1:10)
 
-top_10_fastest %>% select(BSSID, ESSID, Speed)
+top_10_fastest %>% select(BSSID, ESSID, Speed) %>% knitr::kable()
 ```
   
   f.Отсортировать точки доступа по частоте отправки запросов (beacons) в единицу времени по их убыванию.
@@ -114,7 +114,7 @@ top_10_fastest %>% select(BSSID, ESSID, Speed)
 beacon_rate <- dataset1 %>% mutate(beacon_rate = beacons /as.numeric(difftime(Last.time.seen,First.time.seen,units="mins"))) %>%filter(!is.infinite(beacon_rate)) %>%arrange(desc(beacon_rate))
 
 
-beacon_rate %>% select(BSSID, ESSID, beacon_rate)
+beacon_rate %>% select(BSSID, ESSID, beacon_rate) %>% knitr::kable()
 ```
 4. Данные клиентов
   a) Определить производителя для каждого обнаруженного устройства
@@ -122,32 +122,32 @@ beacon_rate %>% select(BSSID, ESSID, beacon_rate)
 ```{r}
 manufa <- dataset2 %>% filter(BSSID != '(not associated)') %>% mutate(Manufacturer = substr(BSSID, 1, 8)) %>% select(Manufacturer)
 
-unique(manufa)
+unique(manufa) %>% knitr::kable()
 ```
-    DC:09:4C Huawei Technologies Co.,Ltd
+  DC:09:4C Huawei Technologies Co.,Ltd
 
-    00:25:00 Apple, Inc.
+  00:25:00 Apple, Inc.
 
-    00:03:7F Atheros Communications, Inc.
+  00:03:7F Atheros Communications, Inc.
 
-    00:23:EB Cisco Systems, Inc
+  00:23:EB Cisco Systems, Inc
 
-    00:0D:97 Hitachi Energy USA Inc.
+  00:0D:97 Hitachi Energy USA Inc.
 
-    08:3A:2F Guangzhou Juan Intelligent Tech Joint Stock Co.,Ltd
+  08:3A:2F Guangzhou Juan Intelligent Tech Joint Stock Co.,Ltd
 
-    E0:D9:E3 Eltex Enterprise Ltd.
+  E0:D9:E3 Eltex Enterprise Ltd.
 
-    E8:28:C1 Eltex Enterprise Ltd.
+  E8:28:C1 Eltex Enterprise Ltd.
 
-    0C:80:63 Tp-Link Technologies Co.,Ltd.
+  0C:80:63 Tp-Link Technologies Co.,Ltd.
   
   b) Обнаружить устройства, которые НЕ рандомизируют свой MAC адрес
   
 ```{r}
 non_randomized_mac <- dataset2 %>% filter(!grepl("^02|^06|^0A|^0E", BSSID)) %>% filter(BSSID != '(not associated)')
 
-non_randomized_mac %>% select(BSSID)
+non_randomized_mac %>% select(BSSID) %>% knitr::kable()
 ```
   
   
@@ -158,7 +158,7 @@ clustered_requests <- dataset2 %>% group_by(Probed.ESSIDs) %>% summarise(
 first_seen = min(First.time.seen, na.rm = TRUE),
 last_seen = max(Last.time.seen, na.rm = TRUE))
 
-clustered_requests
+clustered_requests %>% knitr::kable()
 ```
   
   
@@ -167,7 +167,7 @@ clustered_requests
 ```{r}
 signal_stability <- dataset2 %>% group_by(Probed.ESSIDs) %>% summarise(sd_signal = sd(Power, na.rm = TRUE)) %>% arrange(sd_signal)
 
-signal_stability 
+signal_stability %>% knitr::kable()
 ```
 
 ## Оценка результата

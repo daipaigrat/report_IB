@@ -30,7 +30,7 @@ format:
 1.  Для начала прохождения курса необходимо установить программный пакет dplyr.
 
 ```{r}
-install.packages("dplyr")
+#install.packages("dplyr")
 ```
 2. Загружаем библиотеку.
 
@@ -56,47 +56,47 @@ starwars %>% glimpse()
   
   d) Сколько уникальных рас персонажей (species) представлено в данных?
 ```{r}
-starwars %>% filter(!is.na(species)) %>% reframe(unique(species))
+starwars %>% distinct(species) %>% nrow()
 ```
   
   e) Найти самого высокого персонажа.
 ```{r}
-starwars %>% filter(!is.na(height)) %>% arrange(desc(height)) %>% slice(1) %>% select(name,height)
+starwars %>% filter(!is.na(height)) %>% arrange(desc(height)) %>% slice(1) %>% select(name,height) %>% knitr::kable()
 ```
   
   f) Найти всех персонажей ниже 170
 ```{r}
-starwars %>% filter(!is.na(height) & height < 170) %>% select(name,height)
+starwars %>% filter(!is.na(height) & height < 170) %>% select(name,height) %>% knitr::kable()
 
 ```
   
   g) Подсчитать ИМТ (индекс массы тела) для всех персонажей. ИМТ подсчитать по
   формуле I = m / h^2 где m - масса, h - рост
 ```{r}
-starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(bmi = mass / (height/100)^2) %>% select(name,bmi)
+starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(bmi = mass / (height/100)^2) %>% select(name,bmi) %>% knitr::kable()
 
 ```
   
   h) Найти 10 самых “вытянутых” персонажей. “Вытянутость” оценить по отношению
 массы (mass) к росту (height) персонажей.
 ```{r}
-starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(stretch = mass / height) %>% arrange(desc(stretch)) %>% slice(1:10) %>% select(name,stretch)
+starwars %>% filter(!is.na(mass) & !is.na(height)) %>% mutate(stretch = mass / height) %>% arrange(desc(stretch)) %>% slice(1:10) %>% select(name,stretch) %>% knitr::kable()
 ```
 
   i) Найти средний возраст персонажей каждой расы вселенной Звездных войн.
 ```{r}
-starwars %>% filter(!is.na(species) & !is.na(birth_year)) %>% group_by(species) %>% summarise(average_age = mean(birth_year, na.rm = TRUE))
+starwars %>% filter(!is.na(species) & !is.na(birth_year)) %>% group_by(species) %>% summarise(average_age = mean(birth_year, na.rm = TRUE)) %>% knitr::kable()
 ```
   
   j) Найти самый распространенный цвет глаз персонажей вселенной Звездных
 войн.
 ```{r}
-starwars %>% filter(!is.na(eye_color)) %>% group_by(eye_color) %>% summarise(count = n()) %>% arrange(desc(count)) %>% slice(1)
+starwars %>% filter(!is.na(eye_color)) %>% group_by(eye_color) %>% summarise(count = n()) %>% arrange(desc(count)) %>% slice(1) %>% knitr::kable()
 ```
 
   k) Подсчитать среднюю длину имени в каждой расе вселенной Звездных войн.
 ```{r}
-starwars %>% filter(!is.na(species) & !is.na(name)) %>% mutate(name_length = nchar(name)) %>% group_by(species) %>% summarise(len = mean(name_length, na.rm = TRUE))
+starwars %>% filter(!is.na(species) & !is.na(name)) %>% mutate(name_length = nchar(name)) %>% group_by(species) %>% summarise(len = mean(name_length, na.rm = TRUE)) %>% knitr::kable()
 ```
 
 ## Оценка результата
