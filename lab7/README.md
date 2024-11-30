@@ -41,15 +41,29 @@ library(arrow)
         timestamp
 
 ``` r
+library(dplyr)
+```
+
+
+    Attaching package: 'dplyr'
+
+    The following objects are masked from 'package:stats':
+
+        filter, lag
+
+    The following objects are masked from 'package:base':
+
+        intersect, setdiff, setequal, union
+
+``` r
 library(tidyverse)
 ```
 
     ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-    ✔ purrr     1.0.2     
+    ✔ forcats   1.0.0     ✔ readr     2.1.5
+    ✔ ggplot2   3.5.1     ✔ stringr   1.5.1
+    ✔ lubridate 1.9.3     ✔ tibble    3.2.1
+    ✔ purrr     1.0.2     ✔ tidyr     1.3.1
 
     ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ✖ lubridate::duration() masks arrow::duration()
@@ -92,7 +106,7 @@ glimpse(df)
 1.  Найдите утечку данных из вашей сети
 
 ``` r
-task1 <- df %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% group_by(src) %>% summarise("sum" = sum(bytes)) %>%  filter(sum>6000000000) %>% select(src,sum) 
+task1 <- df %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") & !str_detect(dst, "^13.") & !str_detect(dst, "^14."))  %>% group_by(src) %>% summarise("sum" = sum(bytes)) %>% arrange(desc(sum)) %>% head(1) %>% select(src) 
 task1 %>% collect() %>% knitr::kable()
 ```
 
@@ -100,13 +114,11 @@ task1 %>% collect() %>% knitr::kable()
 <thead>
 <tr class="header">
 <th style="text-align: left;">src</th>
-<th style="text-align: right;">sum</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">13.37.84.125</td>
-<td style="text-align: right;">11152202376</td>
 </tr>
 </tbody>
 </table>
@@ -233,7 +245,7 @@ task21 %>% collect() %>% knitr::kable()
 
 ``` r
 task22 <- df %>% mutate(time = hour(as_datetime(timestamp/1000))) %>% 
-filter(!str_detect(src, "^13.37.84.125")) %>%  filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% filter(time >= 1 & time <= 15) %>%  group_by(src) %>% summarise("sum" = sum(bytes)) %>% filter(sum>290000000) %>% select(src,sum) 
+filter(!str_detect(src, "^13.37.84.125")) %>%  filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% filter(time >= 1 & time <= 15) %>%  group_by(src) %>% summarise("sum" = sum(bytes)) %>% arrange(desc(sum)) %>% head(1) %>% select(src) 
 task22 %>% collect() %>% knitr::kable()
 ```
 
@@ -241,13 +253,11 @@ task22 %>% collect() %>% knitr::kable()
 <thead>
 <tr class="header">
 <th style="text-align: left;">src</th>
-<th style="text-align: right;">sum</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">12.55.77.96</td>
-<td style="text-align: right;">298669501</td>
 </tr>
 </tbody>
 </table>
@@ -259,7 +269,7 @@ task31 <- df %>% filter(!str_detect(src, "^13.37.84.125")) %>% filter(!str_detec
 
 
 task31 %>%  group_by(port) %>% summarise("mean"=mean(bytes), "max"=max(bytes), "sum" = sum(bytes)) %>% 
-  mutate("Raz"= max-mean)  %>% filter(Raz!=0, Raz>170000) %>% collect() %>% knitr::kable()
+  mutate("Raz"= max-mean)  %>% filter(Raz!=0) %>% arrange(desc(Raz)) %>% head(1) %>% collect() %>% knitr::kable()
 ```
 
 <table>
@@ -284,7 +294,7 @@ task31 %>%  group_by(port) %>% summarise("mean"=mean(bytes), "max"=max(bytes), "
 </table>
 
 ``` r
-task32 <- task31  %>% filter(port==37) %>% group_by(src) %>% summarise("mean"=mean(bytes)) %>% filter(mean>37543) %>% select(src)
+task32 <- task31  %>% filter(port==37) %>% group_by(src) %>% summarise("mean"=mean(bytes)) %>% arrange(desc(mean)) %>% head(1) %>% select(src)
 task32 %>% collect() %>% knitr::kable()
 ```
 
