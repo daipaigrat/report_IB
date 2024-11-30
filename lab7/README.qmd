@@ -35,6 +35,7 @@ format:
 
 ```{r}
 library(arrow)
+library(dplyr)
 library(tidyverse)
 #download.file("https://storage.yandexcloud.net/arrow-datasets/tm_data.pqt",destfile = "tm_data.pqt")
 df <- arrow::open_dataset(sources = "tm_data.pqt", format = "parquet")
@@ -49,7 +50,7 @@ glimpse(df)
   a.  Найдите утечку данных из вашей сети
     
 ```{r}
-task1 <- df %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% group_by(src) %>% summarise("sum" = sum(bytes)) %>%  filter(sum>6000000000) %>% select(src,sum) 
+task1 <- df %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") & !str_detect(dst, "^13.") & !str_detect(dst, "^14."))  %>% group_by(src) %>% summarise("sum" = sum(bytes)) %>% arrange(desc(sum)) %>% head(1) %>% select(src) 
 task1 %>% collect() %>% knitr::kable()
 ```
     
@@ -67,7 +68,7 @@ task21 %>% collect() %>% knitr::kable()
     
 ```{r}
 task22 <- df %>% mutate(time = hour(as_datetime(timestamp/1000))) %>% 
-filter(!str_detect(src, "^13.37.84.125")) %>%  filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% filter(time >= 1 & time <= 15) %>%  group_by(src) %>% summarise("sum" = sum(bytes)) %>% filter(sum>290000000) %>% select(src,sum) 
+filter(!str_detect(src, "^13.37.84.125")) %>%  filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% filter(time >= 1 & time <= 15) %>%  group_by(src) %>% summarise("sum" = sum(bytes)) %>% arrange(desc(sum)) %>% head(1) %>% select(src) 
 task22 %>% collect() %>% knitr::kable()
 ```
     
@@ -78,11 +79,11 @@ task31 <- df %>% filter(!str_detect(src, "^13.37.84.125")) %>% filter(!str_detec
 
 
 task31 %>%  group_by(port) %>% summarise("mean"=mean(bytes), "max"=max(bytes), "sum" = sum(bytes)) %>% 
-  mutate("Raz"= max-mean)  %>% filter(Raz!=0, Raz>170000) %>% collect() %>% knitr::kable()
+  mutate("Raz"= max-mean)  %>% filter(Raz!=0) %>% arrange(desc(Raz)) %>% head(1) %>% collect() %>% knitr::kable()
 ```
     
 ```{r}
-task32 <- task31  %>% filter(port==37) %>% group_by(src) %>% summarise("mean"=mean(bytes)) %>% filter(mean>37543) %>% select(src)
+task32 <- task31  %>% filter(port==37) %>% group_by(src) %>% summarise("mean"=mean(bytes)) %>% arrange(desc(mean)) %>% head(1) %>% select(src)
 task32 %>% collect() %>% knitr::kable()
 ```
 
