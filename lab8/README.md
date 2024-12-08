@@ -267,10 +267,10 @@ FROM tbl
 WHERE src <> '13.37.84.125'
     AND src <> '12.55.77.96'
     AND (src LIKE '12.%' OR src LIKE '13.%' OR src LIKE '14.%')
-    AND (dst NOT LIKE '12.%' OR dst NOT LIKE '13.%' OR dst NOT LIKE '14.%');")
+    AND (dst NOT LIKE '12.%' AND dst NOT LIKE '13.%' AND dst NOT LIKE '14.%');")
 ```
 
-    [1] 57913813
+    [1] 38498353
 
 ``` r
 dbGetQuery(con,"SELECT port, AVG(bytes) AS mean_bytes, MAX(bytes) AS max_bytes, SUM(bytes) AS sum_bytes, MAX(bytes) - AVG(bytes) AS Raz
@@ -294,10 +294,10 @@ LIMIT 1;") %>% knitr::kable()
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">37</td>
-<td style="text-align: right;">33348.49</td>
+<td style="text-align: right;">35089.99</td>
 <td style="text-align: right;">209402</td>
-<td style="text-align: right;">48192673159</td>
-<td style="text-align: right;">176053.5</td>
+<td style="text-align: right;">32136394510</td>
+<td style="text-align: right;">174312</td>
 </tr>
 </tbody>
 </table>
@@ -322,7 +322,7 @@ LIMIT 1;") %>% knitr::kable()
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">13.46.35.35</td>
+<td style="text-align: left;">14.31.107.42</td>
 </tr>
 </tbody>
 </table>
