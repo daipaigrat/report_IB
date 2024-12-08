@@ -227,11 +227,11 @@ task21 %>% collect() %>% knitr::kable()
 <td style="text-align: right;">168355</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">5</td>
 <td style="text-align: right;">168283</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">9</td>
 <td style="text-align: right;">168283</td>
 </tr>
 <tr class="even">
@@ -265,7 +265,7 @@ task22 %>% collect() %>% knitr::kable()
 1.  Найдите утечку данных 3
 
 ``` r
-task31 <- df %>% filter(!str_detect(src, "^13.37.84.125")) %>% filter(!str_detect(src, "^12.55.77.96")) %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") | !str_detect(dst, "^13.") | !str_detect(dst, "^14."))  %>% select(src, bytes, port) 
+task31 <- df %>% filter(!str_detect(src, "^13.37.84.125")) %>% filter(!str_detect(src, "^12.55.77.96")) %>% filter(str_detect(src, "^12.") | str_detect(src, "^13.") | str_detect(src, "^14."))  %>% filter(!str_detect(dst, "^12.") & !str_detect(dst, "^13.") & !str_detect(dst, "^14."))  %>% select(src, bytes, port) 
 
 
 task31 %>%  group_by(port) %>% summarise("mean"=mean(bytes), "max"=max(bytes), "sum" = sum(bytes)) %>% 
@@ -285,10 +285,10 @@ task31 %>%  group_by(port) %>% summarise("mean"=mean(bytes), "max"=max(bytes), "
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">37</td>
-<td style="text-align: right;">33348.49</td>
+<td style="text-align: right;">35089.99</td>
 <td style="text-align: right;">209402</td>
-<td style="text-align: right;">48192673159</td>
-<td style="text-align: right;">176053.5</td>
+<td style="text-align: right;">32136394510</td>
+<td style="text-align: right;">174312</td>
 </tr>
 </tbody>
 </table>
@@ -306,7 +306,7 @@ task32 %>% collect() %>% knitr::kable()
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">13.46.35.35</td>
+<td style="text-align: left;">14.31.107.42</td>
 </tr>
 </tbody>
 </table>
