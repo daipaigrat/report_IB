@@ -60,7 +60,8 @@ lieless@yandex.ru
 
 ![](img/6.png)
 
-Ссылка на дашборд https://datalens.yandex/jxipcld4bfmo6
+Ссылка на дашборд:
+<https://datalens.yandex.cloud/jxipcld4bfmo6-zhelobanov-a-s-dashboard>
 
 ## Оценка результата
 
